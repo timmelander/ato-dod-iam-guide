@@ -6,7 +6,11 @@
 
 ---
 
+<a id="1-primary-authentication-mechanism"></a>
+
 ## 1. Primary Authentication Mechanism
+
+<a id="11-recommended-architecture-federated-cacpiv-authentication"></a>
 
 ### 1.1 Recommended Architecture: Federated CAC/PIV Authentication
 
@@ -22,7 +26,9 @@ This architecture ensures:
 - Certificate validation occurs at the DoD-managed IdP
 - PKI chain verification against DoD Root CA hierarchy
 - Revocation checking via CRL/OCSP
-- Identity proofing (IAL3) inherited from PIV issuance process
+- Identity proofing (IAL3) inherited from PIV issuance process — see [IAL Requirements](authentication-standards.md#6-identity-assurance-level-ial-requirements)
+
+<a id="12-saml-20-federation-configuration"></a>
 
 ### 1.2 SAML 2.0 Federation Configuration
 
@@ -37,19 +43,21 @@ This architecture ensures:
    - Prevents assertion reuse
 
 3. **Set Authentication Context Class Reference:**
-   - Require certificate-based authentication:
+   - Require certificate-based authentication (see [AuthnContext Classes](appendices.md#f1-saml-authncontext-classes)):
      - `urn:oasis:names:tc:SAML:2.0:ac:classes:X509`
      - `urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI`
 
 4. **Enable Assertion Encryption:**
-   - Required for FAL2 compliance
+   - Required for [FAL2 compliance](appendices.md#appendix-f-federation-assurance-level-fal-reference)
    - Configure IdP to encrypt assertions using OCI IAM's public encryption key
 
 5. **Configure Group Mapping:**
    - Map DoD IdP groups to OCI IAM groups
    - Ensure privileged administrative groups require separate authentication context
 
-**Control Mapping:** IA-2, IA-2(12), IA-8(1)
+**Control Mapping:** [IA-2, IA-2(12), IA-8(1)](appendices.md#a1-identification-and-authentication-ia-family)
+
+<a id="13-alternative-x509-direct-authentication"></a>
 
 ### 1.3 Alternative: X.509 Direct Authentication (Limited Use Cases)
 
@@ -65,7 +73,11 @@ For scenarios requiring direct certificate authentication:
 
 ---
 
+<a id="2-multi-factor-authentication-mfa"></a>
+
 ## 2. Multi-Factor Authentication (MFA)
+
+<a id="21-factor-configuration"></a>
 
 ### 2.1 Factor Configuration
 
@@ -81,7 +93,11 @@ For scenarios requiring direct certificate authentication:
 | **Email** | **Prohibited** | **Prohibited** | **DISABLE** |
 | **Phone Call** | **Prohibited** | **Prohibited** | **DISABLE** |
 
-**Control Mapping:** IA-2(1), IA-2(2), IA-2(6)
+For complete compliance matrix, see [MFA Factor Compliance Matrix](appendices.md#appendix-e-mfa-factor-compliance-matrix).
+
+**Control Mapping:** [IA-2(1), IA-2(2), IA-2(6)](appendices.md#a1-identification-and-authentication-ia-family)
+
+<a id="22-fido2-configuration"></a>
 
 ### 2.2 FIDO2 Configuration
 
@@ -95,7 +111,9 @@ For scenarios requiring direct certificate authentication:
 | User Verification | Required | Ensures local authentication |
 | Timeout | 60000 ms | 60-second enrollment window |
 
-**Control Mapping:** IA-2(6), IA-2(8)
+**Control Mapping:** [IA-2(6), IA-2(8)](appendices.md#a1-identification-and-authentication-ia-family)
+
+<a id="23-sign-on-policy-configuration"></a>
 
 ### 2.3 Sign-On Policy Configuration
 
@@ -134,24 +152,32 @@ Actions:
   - MFA: Defer to IdP (CAC/PIV satisfies MFA requirement)
 ```
 
-**Control Mapping:** IA-2, IA-5(1)
+**Note:** CAC/PIV satisfies MFA through possession (card) + knowledge (PIN). See [CAC/PIV Authentication](authentication-standards.md#33-cacpiv-authentication).
+
+**Control Mapping:** [IA-2, IA-5(1)](appendices.md#a1-identification-and-authentication-ia-family)
 
 ---
 
+<a id="3-federation-and-protocols"></a>
+
 ## 3. Federation and Protocols
+
+<a id="31-saml-20-requirements"></a>
 
 ### 3.1 SAML 2.0 Requirements
 
 | Configuration | Requirement | OCI IAM Setting |
 |---------------|-------------|-----------------|
 | Assertion Signing | Required | IdP signs with SHA-256+ |
-| Assertion Encryption | Required (FAL2) | Enable "Encrypt Assertion" |
+| Assertion Encryption | Required ([FAL2](appendices.md#appendix-f-federation-assurance-level-fal-reference)) | Enable "Encrypt Assertion" |
 | NameID Format | Persistent or Transient | Configure per IdP requirements |
 | Single Logout | Recommended | Enable SLO endpoints |
 | Assertion Lifetime | ≤5 minutes | Configured at IdP; validated by OCI IAM |
 | Single-Use Enforcement | Required | Default behavior |
 
-**Control Mapping:** IA-2(8), IA-8(1), SC-23
+**Control Mapping:** [IA-2(8), IA-8(1), SC-23](appendices.md#appendix-a-nist-sp-800-53-rev-5-control-mapping)
+
+<a id="32-trust-relationship-documentation"></a>
 
 ### 3.2 Trust Relationship Documentation
 
@@ -160,12 +186,16 @@ Maintain the following records for ATO evidence:
 - [ ] SAML metadata exchange dates and records
 - [ ] Certificate expiration dates and rotation schedule
 - [ ] Attribute mapping specifications
-- [ ] Authentication context requirements
+- [ ] Authentication context requirements — see [AuthnContext Classes](appendices.md#f1-saml-authncontext-classes)
 - [ ] Federation agreement documentation
 
 ---
 
+<a id="4-identity-assurance-and-lifecycle-controls"></a>
+
 ## 4. Identity Assurance and Lifecycle Controls
+
+<a id="41-identity-proofing-inheritance"></a>
 
 ### 4.1 Identity Proofing Inheritance
 
@@ -175,7 +205,11 @@ When federating with DoD IdP:
 - DoD employees/contractors: **IAL3 via PIV issuance process** per FIPS 201-3
 - Document inheritance clearly in SSP control implementation statements
 
-**Control Mapping:** IA-12, IA-12(2)
+For IAL requirements by Impact Level, see [IAL Requirements](authentication-standards.md#6-identity-assurance-level-ial-requirements).
+
+**Control Mapping:** [IA-12, IA-12(2)](appendices.md#a1-identification-and-authentication-ia-family)
+
+<a id="42-account-provisioning"></a>
 
 ### 4.2 Account Provisioning
 
@@ -187,7 +221,9 @@ When federating with DoD IdP:
 
 **Navigation for JIT:** Identity Providers → [IdP] → JIT Settings → Enable
 
-**Control Mapping:** IA-4, IA-5
+**Control Mapping:** [IA-4, IA-5](appendices.md#a1-identification-and-authentication-ia-family)
+
+<a id="43-deprovisioning"></a>
 
 ### 4.3 Deprovisioning
 
@@ -196,23 +232,29 @@ When federating with DoD IdP:
 - Document privileged account review procedures (**quarterly minimum**)
 - Implement immediate revocation capability for terminated personnel
 
-**Control Mapping:** AC-2, PS-4
+**Control Mapping:** [AC-2](appendices.md#a2-access-control-ac-family), PS-4
 
 ---
 
+<a id="5-session-management-and-token-controls"></a>
+
 ## 5. Session Management and Token Controls
+
+<a id="51-session-timeout-configuration"></a>
 
 ### 5.1 Session Timeout Configuration
 
 **Navigation:** Domains → [Domain] → Settings → Session settings
 
-| Parameter | IL4 Setting | IL5 Setting |
-|-----------|-------------|-------------|
-| Session Duration (Max) | 720 minutes (12 hours) | 480 minutes (8 hours) |
-| Idle Timeout | 15 minutes | 15 minutes |
-| Remember Device | **Disabled** | **Disabled** |
+| Parameter | IL4 Setting | IL5 Setting | DISA SRG Reference |
+|-----------|-------------|-------------|-------------------|
+| Session Duration (Max) | 720 minutes (12 hours) | 480 minutes (8 hours) | [SRG Requirements](appendices.md#d1-disa-srg-requirements) |
+| Idle Timeout | 15 minutes | 15 minutes | [SRG Requirements](appendices.md#d1-disa-srg-requirements) |
+| Remember Device | **Disabled** | **Disabled** | — |
 
-**Control Mapping:** AC-11, AC-12, SC-10
+**Control Mapping:** [AC-11, AC-12](appendices.md#a2-access-control-ac-family), [SC-10](appendices.md#a4-system-and-communications-protection-sc-family)
+
+<a id="52-sign-on-policy-session-controls"></a>
 
 ### 5.2 Sign-On Policy Session Controls
 
@@ -221,6 +263,8 @@ Within each sign-on rule:
 - Reauthentication: Required every session for privileged access
 - Trusted devices: **Disabled** for DoD environments
 - Session binding: Enable where available
+
+<a id="53-token-configuration"></a>
 
 ### 5.3 Token Configuration
 
@@ -231,28 +275,34 @@ Within each sign-on rule:
 | Token revocation on logout | Enabled | Immediate invalidation |
 | Refresh token rotation | Enabled | Prevent replay |
 
-**Token Binding Note:** Token binding is satisfied through proof-of-possession authenticators (FIDO2) and short-lived tokens, as OCI IAM does not implement TLS Token Binding (RFC 8471).
+**Token Binding Note:** Token binding is satisfied through proof-of-possession authenticators (FIDO2) and short-lived tokens, as OCI IAM does not implement TLS Token Binding (RFC 8471). See [Token Binding Clarification](authentication-standards.md#71-token-binding-clarification).
 
-**Control Mapping:** AC-12, IA-2(8), SC-23
+**Control Mapping:** [AC-12](appendices.md#a2-access-control-ac-family), [IA-2(8)](appendices.md#a1-identification-and-authentication-ia-family), [SC-23](appendices.md#a4-system-and-communications-protection-sc-family)
 
 ---
 
+<a id="6-auditing-logging-and-ato-evidence"></a>
+
 ## 6. Auditing, Logging, and ATO Evidence
+
+<a id="61-required-authentication-events"></a>
 
 ### 6.1 Required Authentication Events
 
-OCI Audit automatically captures:
+OCI Audit automatically captures (see [Event Types](appendices.md#appendix-c-authentication-event-types) for complete list):
 
 | Event Type | Event ID | Control Mapping |
 |------------|----------|-----------------|
-| User Login Success | `sso.authentication.success` | AU-2(a)(1) |
-| User Login Failure | `sso.authentication.failure` | AU-2(a)(2) |
-| MFA Challenge | `mfa.validation.*` | AU-2(a)(5) |
-| Session Creation | `session.create` | AU-2(a)(1) |
-| Session Termination | `session.terminate` | AU-2(a)(3) |
-| Password Change | `user.password.change` | AU-2(a)(6) |
-| Account Lockout | `user.account.lock` | AU-2(a)(4) |
-| Privilege Escalation | `iam.policy.*` | AU-2(a)(7) |
+| User Login Success | `sso.authentication.success` | [AU-2(a)(1)](appendices.md#a3-audit-and-accountability-au-family) |
+| User Login Failure | `sso.authentication.failure` | [AU-2(a)(2)](appendices.md#a3-audit-and-accountability-au-family) |
+| MFA Challenge | `mfa.validation.*` | [AU-2(a)(5)](appendices.md#a3-audit-and-accountability-au-family) |
+| Session Creation | `session.create` | [AU-2(a)(1)](appendices.md#a3-audit-and-accountability-au-family) |
+| Session Termination | `session.terminate` | [AU-2(a)(3)](appendices.md#a3-audit-and-accountability-au-family) |
+| Password Change | `user.password.change` | [AU-2(a)(6)](appendices.md#a3-audit-and-accountability-au-family) |
+| Account Lockout | `user.account.lock` | [AU-2(a)(4)](appendices.md#a3-audit-and-accountability-au-family) |
+| Privilege Escalation | `iam.policy.*` | [AU-2(a)(7)](appendices.md#a3-audit-and-accountability-au-family) |
+
+<a id="62-siem-integration-architecture"></a>
 
 ### 6.2 SIEM Integration Architecture
 
@@ -281,7 +331,9 @@ OCI Audit automatically captures:
    - **Target:** OCI Streaming or Object Storage
 3. Configure SIEM ingestion from Streaming (Kafka protocol) or Object Storage
 
-**Control Mapping:** AU-6, SI-4
+**Control Mapping:** [AU-6](appendices.md#a3-audit-and-accountability-au-family), SI-4
+
+<a id="63-log-retention-requirements"></a>
 
 ### 6.3 Log Retention Requirements
 
@@ -290,28 +342,30 @@ OCI Audit automatically captures:
 | Audit Logs | 1 year online, 3 years archived | 365 days | Archive to Object Storage with retention lock |
 | Authentication Events | 1 year | 365 days in OCI Audit | Forward to SIEM with extended retention |
 
-**Control Mapping:** AU-11
+**Control Mapping:** [AU-11](appendices.md#a3-audit-and-accountability-au-family)
+
+<a id="64-ato-evidence-checklist"></a>
 
 ### 6.4 ATO Evidence Checklist
 
-Prepare the following artifacts for assessment:
+Prepare the following artifacts for assessment (see [ATO Assessor Expectations](authentication-standards.md#8-ato-assessor-expectations)):
 
-- [ ] Sign-on policy export showing MFA enforcement
-- [ ] Identity provider federation configuration screenshots
-- [ ] SAML metadata exchange documentation
-- [ ] Audit log samples demonstrating event capture
-- [ ] SIEM integration configuration documentation
-- [ ] Session timeout configuration evidence
-- [ ] MFA factor configuration showing prohibited factors disabled
-- [ ] User provisioning/deprovisioning procedures
+- [ ] Sign-on policy export showing MFA enforcement — [Section 2.3](#23-sign-on-policy-configuration)
+- [ ] Identity provider federation configuration screenshots — [Section 1.2](#12-saml-20-federation-configuration)
+- [ ] SAML metadata exchange documentation — [Section 3.2](#32-trust-relationship-documentation)
+- [ ] Audit log samples demonstrating event capture — [Section 6.1](#61-required-authentication-events)
+- [ ] SIEM integration configuration documentation — [Section 6.2](#62-siem-integration-architecture)
+- [ ] Session timeout configuration evidence — [Section 5.1](#51-session-timeout-configuration)
+- [ ] MFA factor configuration showing prohibited factors disabled — [Section 2.1](#21-factor-configuration)
+- [ ] User provisioning/deprovisioning procedures — [Section 4.2](#42-account-provisioning), [Section 4.3](#43-deprovisioning)
 - [ ] Privileged access review records
-- [ ] Federation agreement and trust documentation
+- [ ] Federation agreement and trust documentation — [Section 3.2](#32-trust-relationship-documentation)
 
 ---
 
 ## Related Documents
 
-- [DoD Authentication Standards](authentication-standards.md)
-- [OCI IAM Assessment](oci-iam-assessment.md)
-- [Executive Summary](executive-summary.md)
-- [Control Mappings and Appendices](appendices.md)
+- [DoD Authentication Standards](authentication-standards.md) — Policy requirements and mandatory controls
+- [OCI IAM Assessment](oci-iam-assessment.md) — Platform suitability evaluation
+- [Executive Summary](executive-summary.md) — One-page ATO determination
+- [Control Mappings and Appendices](appendices.md) — NIST 800-53 mappings, reference tables
