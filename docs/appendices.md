@@ -1,7 +1,7 @@
 # Appendices: Control Mappings and Reference Tables
 
-**Applicable Environment:** OCI DoD Realm (IL4/IL5)
-**Purpose:** ATO Review Package Supporting Documentation
+**Applicable Environment:** OCI DoD Realm (IL4/IL5) and Nonfederal CUI Systems
+**Purpose:** ATO Review Package, CMMC Assessment Supporting Documentation
 **Last Updated:** January 2026
 
 ---

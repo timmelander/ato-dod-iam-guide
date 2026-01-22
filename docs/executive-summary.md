@@ -9,7 +9,7 @@
 **Service Evaluated:** Oracle IAM Identity Domains
 **Impact Levels:** IL4 (CUI), IL5 (CUI / NSS)
 **Assessment Date:** January 2026
-**Purpose:** Determine suitability of Oracle IAM Identity Domains to satisfy DoD authentication, MFA, and federation requirements for Authority to Operate (ATO)
+**Purpose:** Determine suitability of Oracle IAM Identity Domains to satisfy DoD authentication, MFA, and federation requirements for Authority to Operate (ATO) and CMMC Level 2 certification
 
 ---
 
@@ -25,7 +25,7 @@ This assessment evaluates whether **Oracle IAM Identity Domains**, when deployed
 | DoD CIO MFA Policy (2024) | MFA requirements | [MFA Compliance Matrix](appendices.md#appendix-e-mfa-factor-compliance-matrix) |
 | DoDI 8520.03 | Identification and Authentication | [Authentication Standards](authentication-standards.md#governing-policy) |
 | NIST SP 800-53 Rev. 5 | Security Controls (IA, AC, AU) | [Control Mapping](appendices.md#appendix-a-nist-sp-800-53-rev-5-control-mapping) |
-| NIST SP 800-63-4 | Digital Identity Guidelines (AAL/FAL) | [AAL Requirements](authentication-standards.md#2-authentication-assurance-level-aal-requirements) |
+| NIST SP 800-63 Rev 4 | Digital Identity Guidelines (AAL/FAL) | [AAL Requirements](authentication-standards.md#2-authentication-assurance-level-aal-requirements) |
 | NIST SP 800-171 Rev. 3 | CUI Protection (DFARS, CMMC) | [Gap Analysis](nist-800-171-gap-analysis.md) |
 
 ---
@@ -162,7 +162,20 @@ For SIEM integration steps, see [SIEM Integration Architecture](implementation-g
 | 5 | Authentication audit logs forwarded to approved SIEM | [SIEM Integration](implementation-guide.md#62-siem-integration-architecture) | Required |
 | 6 | Password-only authentication disabled | [Sign-On Policy Configuration](implementation-guide.md#23-sign-on-policy-configuration) | Required |
 
-When these conditions are met, Oracle IAM Identity Domains fully satisfies DoD authentication, MFA, federation, and auditing requirements for ATO at IL4 and IL5.
+### Additional Conditions for CMMC Level 2
+
+For organizations subject to DFARS 252.204-7012 or pursuing CMMC Level 2 certification:
+
+| # | Condition | DoD ODP Value | Reference |
+|---|-----------|---------------|-----------|
+| 7 | Password policy meets minimum length | 16 characters | [Password Policy](implementation-guide.md#45-password-policy-configuration) |
+| 8 | Inactive accounts disabled | 90 days | [Deprovisioning](implementation-guide.md#43-deprovisioning) |
+| 9 | Identifier reuse prevention documented | 10 years | [Identifier Management](implementation-guide.md#44-identifier-management) |
+| 10 | Account lifecycle procedures documented | Per 03.01.01 | [Provisioning](implementation-guide.md#42-account-provisioning) |
+
+For complete NIST 800-171 control mapping, see [NIST 800-171 Gap Analysis](nist-800-171-gap-analysis.md).
+
+When these conditions are met, Oracle IAM Identity Domains fully satisfies DoD authentication, MFA, federation, and auditing requirements for ATO at IL4 and IL5, and supports CMMC Level 2 certification for IAM controls.
 
 ---
 

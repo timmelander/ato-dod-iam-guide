@@ -1,7 +1,7 @@
 # Oracle IAM Identity Domains — DoD ATO Suitability Assessment
 
-**Applicable Environment:** OCI DoD Realm (IL4/IL5/IL6)
-**Purpose:** SSP, Security Control Implementation Statements, ATO Review Package
+**Applicable Environment:** OCI DoD Realm (IL4/IL5/IL6) and Nonfederal CUI Systems
+**Purpose:** SSP, Security Control Implementation Statements, ATO Review Package, CMMC Assessment
 **Last Updated:** January 2026
 
 ---
@@ -48,22 +48,37 @@ Does Oracle IAM Identity Domains provide the required technical capabilities to 
 
 **YES** — Oracle IAM Identity Domains can satisfy DoD authentication standards when properly configured with required external integrations.
 
+### 3.3 NIST 800-171 / CMMC Compliance Determination
+
+**Assessment Question:** Does Oracle IAM Identity Domains support NIST SP 800-171 Rev 3 requirements for CUI protection and CMMC Level 2 certification?
+
+**Assessment Answer:** **YES** — Oracle IAM Identity Domains supports NIST 800-171 compliance for identity and access management controls. See [NIST 800-171 Gap Analysis](nist-800-171-gap-analysis.md) for detailed control mapping.
+
+| Control Family | Total Controls | Supported | Customer Config | Inherited |
+|----------------|---------------|-----------|-----------------|-----------|
+| Access Control (03.01) | 12 | 7 | 3 | 0 |
+| Audit (03.03) | 7 | 4 | 2 | 1 |
+| Identification & Auth (03.05) | 9 | 6 | 2 | 1 |
+| System & Comms (03.13) | 7 | 2 | 0 | 5 |
+
 ---
 
 ## 4. Native Capabilities Supporting Compliance
 
-| Capability | DoD Requirement Addressed | Implementation Notes |
-|------------|---------------------------|----------------------|
-| SAML 2.0 federation | Federation with DoD IdPs (FAL2/FAL3) | Full SP and IdP support |
-| OIDC support | Alternative federation protocol | Native support |
-| X.509 certificate authentication | CAC/PIV direct authentication | Via X.509 IdP configuration |
-| FIDO2/WebAuthn | Phishing-resistant MFA (AAL2/AAL3) | Supported in Premium domain types |
-| Sign-on policies | Context-based access control (IA-2) | Granular rule configuration |
-| MFA enforcement | IA-2(1), IA-2(2) | Multiple compliant factor types |
-| Session management | AC-11, AC-12 | Configurable timeouts |
-| Audit logging | AU-2, AU-3, AU-12 | OCI Audit service integration |
-| Adaptive security | Risk-based authentication | Device, network, location evaluation |
-| SCIM provisioning | Account lifecycle management | Automated sync with authoritative sources |
+| Capability | DoD Requirement | NIST 800-171 Control | Implementation Notes |
+|------------|-----------------|---------------------|----------------------|
+| SAML 2.0 federation | FAL2/FAL3 | 03.05.04 | Full SP and IdP support |
+| OIDC support | Alternative protocol | 03.05.04 | Native support |
+| X.509 certificate authentication | CAC/PIV | 03.05.02 | Via X.509 IdP configuration |
+| FIDO2/WebAuthn | AAL2/AAL3 | 03.05.03 | Supported in Premium domain types |
+| Sign-on policies | IA-2 | 03.01.01, 03.05.03 | Granular rule configuration |
+| MFA enforcement | IA-2(1), IA-2(2) | 03.05.03 | Multiple compliant factor types |
+| Session management | AC-11, AC-12 | 03.01.10, 03.13.05 | Configurable timeouts |
+| Audit logging | AU-2, AU-3, AU-12 | 03.03.01-03.03.04 | OCI Audit service integration |
+| Adaptive security | Risk-based auth | 03.01.01 | Device, network, location evaluation |
+| SCIM provisioning | Account lifecycle | 03.01.01 | Automated sync with authoritative sources |
+| Password policies | IA-5(1) | 03.05.09 | Configurable length, complexity, history |
+| User identifier management | IA-4 | 03.05.05 | Unique OCIDs, no automatic recycling |
 
 ---
 
@@ -110,7 +125,21 @@ Does Oracle IAM Identity Domains provide the required technical capabilities to 
 
 6. **Password-only authentication disabled** — MFA must be enforced for all users; password-only access must be prohibited
 
-### 7.2 Domain Type Requirement
+### 7.2 Additional Conditions for NIST 800-171 / CMMC
+
+For organizations subject to DFARS 252.204-7012 or pursuing CMMC Level 2:
+
+7. **Password policy compliance** — Minimum 16-character passwords per DoD ODP
+
+8. **Inactive account management** — Disable accounts inactive for 90+ days per DoD ODP
+
+9. **Identifier management** — Maintain records to prevent identifier reuse for 10 years per DoD ODP
+
+10. **Account lifecycle documentation** — Document provisioning and deprovisioning procedures
+
+For detailed requirements, see [NIST 800-171 Gap Analysis](nist-800-171-gap-analysis.md#8-compliance-summary).
+
+### 7.3 Domain Type Requirement
 
 Identity Domain must be **Premium** or **Oracle Apps Premium** type to access the full MFA feature set including FIDO2/WebAuthn support.
 
@@ -130,21 +159,24 @@ Identity Domain must be **Premium** or **Oracle Apps Premium** type to access th
 
 ## 9. Customer vs Oracle Responsibility Matrix
 
-| Control Area | Oracle (CSP) | Customer |
-|--------------|:------------:|:--------:|
-| Infrastructure security | ✓ | |
-| IAM service availability | ✓ | |
-| Platform cryptographic controls | ✓ | |
-| Native audit log capture | ✓ | |
-| Sign-on policy configuration | | ✓ |
-| MFA factor enablement/disablement | | ✓ |
-| Federation trust establishment | | ✓ |
-| Session timeout configuration | | ✓ |
-| Audit log forwarding to SIEM | | ✓ |
-| Extended log retention | | ✓ |
-| User provisioning/deprovisioning | | ✓ |
-| Privileged access review | | ✓ |
-| Identity proofing (inherited from IdP) | | ✓ |
+| Control Area | Oracle (CSP) | Customer | NIST 800-171 |
+|--------------|:------------:|:--------:|:------------:|
+| Infrastructure security | ✓ | | 03.13.01 |
+| IAM service availability | ✓ | | — |
+| Platform cryptographic controls | ✓ | | 03.13.11 |
+| Native audit log capture | ✓ | | 03.03.01-03 |
+| Sign-on policy configuration | | ✓ | 03.05.03 |
+| MFA factor enablement/disablement | | ✓ | 03.05.03 |
+| Federation trust establishment | | ✓ | 03.05.04 |
+| Session timeout configuration | | ✓ | 03.01.10 |
+| Audit log forwarding to SIEM | | ✓ | 03.03.05 |
+| Extended log retention | | ✓ | 03.03.04 |
+| User provisioning/deprovisioning | | ✓ | 03.01.01 |
+| Privileged access review | | ✓ | 03.01.07 |
+| Identity proofing (inherited from IdP) | | ✓ | 03.05.01 |
+| Password policy configuration | | ✓ | 03.05.09 |
+| Identifier management policy | | ✓ | 03.05.05 |
+| Inactive account management | | ✓ | 03.01.01 |
 
 ---
 

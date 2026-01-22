@@ -21,12 +21,12 @@ This documentation assists security architects, ISSOs, and compliance teams in:
 
 | Standard | Description |
 |----------|-------------|
-| DISA Cloud Computing SRG v1r5 | Cloud Security Requirements by Impact Level |
-| DoD CIO MFA Policy (2024) | Multi-Factor Authentication Requirements |
-| DoDI 8520.03 | Identification and Authentication for DoD Information Systems |
-| NIST SP 800-53 Rev 5 | Security and Privacy Controls (IA, AC, AU families) |
-| NIST SP 800-63-4 | Digital Identity Guidelines (IAL, AAL, FAL) |
-| NIST SP 800-171 Rev 3 | CUI Protection for Nonfederal Systems (DFARS, CMMC) |
+| [DISA Cloud Computing SRG v1r5](https://dl.dod.cyber.mil/wp-content/uploads/cloud/SRG/index.html) | Cloud Security Requirements by Impact Level |
+| [DoD CIO MFA Policy (2024)](https://dodcio.defense.gov/Portals/0/Documents/Cyber/MFA_Strategy.pdf) | Multi-Factor Authentication Requirements |
+| [DoDI 8520.03](https://www.esd.whs.mil/Directives/issuances/dodi/) | Identification and Authentication for DoD Information Systems |
+| [NIST SP 800-53 Rev 5](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final) | Security and Privacy Controls (IA, AC, AU families) |
+| [NIST SP 800-63 Rev 4](https://pages.nist.gov/800-63-4/) | Digital Identity Guidelines (IAL, AAL, FAL) |
+| [NIST SP 800-171 Rev 3](https://csrc.nist.gov/pubs/sp/800/171/r3/final) | CUI Protection for Nonfederal Systems (DFARS, CMMC) |
 
 ---
 

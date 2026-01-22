@@ -1,8 +1,12 @@
 # OCI IAM Identity Domains Implementation Guide
 
-**Applicable Environment:** OCI DoD Realm (IL4/IL5)
-**Purpose:** Configuration guidance for ATO compliance
+**Applicable Environment:** OCI DoD Realm (IL4/IL5) and Nonfederal CUI Systems
+**Purpose:** Configuration guidance for ATO compliance, NIST 800-171, and CMMC
 **Last Updated:** January 2026
+
+---
+
+> **NIST 800-171 / CMMC Note:** This guide addresses both DoD ATO requirements (DISA SRG) and NIST SP 800-171 Rev 3 requirements for CUI protection. Where DoD Organization-Defined Parameters (ODPs) specify values, those are indicated. DISA SRG requirements may be more restrictive than 800-171 baseline — always apply the stricter requirement. See [NIST 800-171 Gap Analysis](nist-800-171-gap-analysis.md) for detailed control mapping.
 
 ---
 
@@ -231,8 +235,48 @@ For IAL requirements by Impact Level, see [IAL Requirements](authentication-stan
 - Implement automated deprovisioning via SCIM for authoritative source sync
 - Document privileged account review procedures (**quarterly minimum**)
 - Implement immediate revocation capability for terminated personnel
+- **Disable inactive accounts within 90 days** (DoD ODP for NIST 800-171 03.01.01)
 
-**Control Mapping:** [AC-2](appendices.md#a2-access-control-ac-family), PS-4
+**Control Mapping:** [AC-2](appendices.md#a2-access-control-ac-family), PS-4, [03.01.01](nist-800-171-gap-analysis.md#030101-system-account-management)
+
+<a id="44-identifier-management"></a>
+
+### 4.4 Identifier Management
+
+Per NIST 800-171 control 03.05.05 and DoD ODP requirements:
+
+| Requirement | DoD ODP Value | Implementation |
+|-------------|---------------|----------------|
+| Identifier reuse prevention | **10 years** | Maintain records of all user identifiers |
+| Unique identification | Required | Use enterprise GUID from authoritative source |
+| Identifier recycling | Prohibited | Never reassign deleted user identifiers |
+
+**Customer Action Required:**
+- Document identifier management policy prohibiting reuse for 10 years
+- Maintain audit trail of all created/deleted user identifiers
+- Consider using persistent enterprise identifiers (e.g., EDIPI) from authoritative source
+
+**Control Mapping:** [IA-4](appendices.md#a1-identification-and-authentication-ia-family), [03.05.05](nist-800-171-gap-analysis.md#030505-identifier-management)
+
+<a id="45-password-policy-configuration"></a>
+
+### 4.5 Password Policy Configuration
+
+**Navigation:** Domains → [Domain] → Settings → Password policy
+
+Per NIST 800-171 control 03.05.09 and DoD ODP requirements:
+
+| Parameter | DoD ODP Value | OCI IAM Setting |
+|-----------|---------------|-----------------|
+| Minimum length | **16 characters** | Minimum password length: 16 |
+| Password history | **24 generations** (recommended) | Password history count: 24 |
+| Complexity | Required | Enable complexity requirements |
+| Compromised password check | **Quarterly update** | Customer-managed process |
+| Maximum age | Organization-defined | Configure per policy (365 days max recommended) |
+
+**Note:** For DoD environments, password-only authentication is prohibited. Passwords serve as one factor in MFA scenarios. Configure password policies for local administrative accounts and backup authentication.
+
+**Control Mapping:** [IA-5(1)](appendices.md#a1-identification-and-authentication-ia-family), [03.05.09](nist-800-171-gap-analysis.md#030509-password-authentication)
 
 ---
 
@@ -246,13 +290,23 @@ For IAL requirements by Impact Level, see [IAL Requirements](authentication-stan
 
 **Navigation:** Domains → [Domain] → Settings → Session settings
 
-| Parameter | IL4 Setting | IL5 Setting | DISA SRG Reference |
-|-----------|-------------|-------------|-------------------|
-| Session Duration (Max) | 720 minutes (12 hours) | 480 minutes (8 hours) | [SRG Requirements](appendices.md#d1-disa-srg-requirements) |
-| Idle Timeout | 15 minutes | 15 minutes | [SRG Requirements](appendices.md#d1-disa-srg-requirements) |
-| Remember Device | **Disabled** | **Disabled** | — |
+| Parameter | NIST 800-171 (DoD ODP) | DISA SRG IL4 | DISA SRG IL5 | Apply Stricter |
+|-----------|------------------------|--------------|--------------|----------------|
+| Idle Timeout | ≤15 minutes | ≤15 minutes | ≤15 minutes | **15 minutes** |
+| Session Duration (Max) | ≤24 hours | ≤12 hours | ≤8 hours | **IL4: 12h / IL5: 8h** |
+| Remember Device | — | Disabled | Disabled | **Disabled** |
 
-**Control Mapping:** [AC-11, AC-12](appendices.md#a2-access-control-ac-family), [SC-10](appendices.md#a4-system-and-communications-protection-sc-family)
+**Configuration Values:**
+
+| Parameter | IL4 Setting | IL5 Setting |
+|-----------|-------------|-------------|
+| Session Duration (Max) | 720 minutes (12 hours) | 480 minutes (8 hours) |
+| Idle Timeout | 15 minutes | 15 minutes |
+| Remember Device | **Disabled** | **Disabled** |
+
+**Note:** NIST 800-171 DoD ODP allows up to 24 hours for session duration, but DISA SRG requires shorter timeouts for IL4/IL5. Always apply the stricter requirement.
+
+**Control Mapping:** [AC-11, AC-12](appendices.md#a2-access-control-ac-family), [SC-10](appendices.md#a4-system-and-communications-protection-sc-family), [03.01.10](nist-800-171-gap-analysis.md#030110-device-lock), [03.13.05](nist-800-171-gap-analysis.md#031305-session-termination)
 
 <a id="52-sign-on-policy-session-controls"></a>
 
@@ -346,20 +400,37 @@ OCI Audit automatically captures (see [Event Types](appendices.md#appendix-c-aut
 
 <a id="64-ato-evidence-checklist"></a>
 
-### 6.4 ATO Evidence Checklist
+### 6.4 ATO and CMMC Evidence Checklist
 
-Prepare the following artifacts for assessment (see [ATO Assessor Expectations](authentication-standards.md#8-ato-assessor-expectations)):
+Prepare the following artifacts for ATO assessment and CMMC Level 2 certification (see [ATO Assessor Expectations](authentication-standards.md#8-ato-assessor-expectations)):
 
+**Authentication and MFA:**
 - [ ] Sign-on policy export showing MFA enforcement — [Section 2.3](#23-sign-on-policy-configuration)
+- [ ] MFA factor configuration showing prohibited factors disabled — [Section 2.1](#21-factor-configuration)
+- [ ] FIDO2 configuration for privileged access — [Section 2.2](#22-fido2-configuration)
+
+**Federation:**
 - [ ] Identity provider federation configuration screenshots — [Section 1.2](#12-saml-20-federation-configuration)
 - [ ] SAML metadata exchange documentation — [Section 3.2](#32-trust-relationship-documentation)
+- [ ] Federation agreement and trust documentation — [Section 3.2](#32-trust-relationship-documentation)
+
+**Session Management:**
+- [ ] Session timeout configuration evidence — [Section 5.1](#51-session-timeout-configuration)
+- [ ] Token lifetime configuration — [Section 5.3](#53-token-configuration)
+
+**Account Lifecycle (NIST 800-171):**
+- [ ] User provisioning/deprovisioning procedures — [Section 4.2](#42-account-provisioning), [Section 4.3](#43-deprovisioning)
+- [ ] Inactive account disable process (90-day threshold) — [Section 4.3](#43-deprovisioning)
+- [ ] Identifier management policy (10-year reuse prevention) — [Section 4.4](#44-identifier-management)
+- [ ] Password policy configuration (16+ characters) — [Section 4.5](#45-password-policy-configuration)
+- [ ] Privileged access review records (quarterly)
+
+**Audit and Monitoring:**
 - [ ] Audit log samples demonstrating event capture — [Section 6.1](#61-required-authentication-events)
 - [ ] SIEM integration configuration documentation — [Section 6.2](#62-siem-integration-architecture)
-- [ ] Session timeout configuration evidence — [Section 5.1](#51-session-timeout-configuration)
-- [ ] MFA factor configuration showing prohibited factors disabled — [Section 2.1](#21-factor-configuration)
-- [ ] User provisioning/deprovisioning procedures — [Section 4.2](#42-account-provisioning), [Section 4.3](#43-deprovisioning)
-- [ ] Privileged access review records
-- [ ] Federation agreement and trust documentation — [Section 3.2](#32-trust-relationship-documentation)
+- [ ] Log retention policy documentation — [Section 6.3](#63-log-retention-requirements)
+
+For CMMC-specific mapping, see [CMMC Alignment](nist-800-171-gap-analysis.md#9-cmmc-alignment).
 
 ---
 

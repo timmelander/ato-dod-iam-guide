@@ -1,8 +1,12 @@
 # DoD-Approved Authentication Standards for Web Applications
 
-**Applicable Environment:** OCI DoD Realm (IL4/IL5/IL6)
-**Purpose:** SSP, Security Control Implementation Statements, ATO Review Package
+**Applicable Environment:** OCI DoD Realm (IL4/IL5/IL6) and Nonfederal CUI Systems
+**Purpose:** SSP, Security Control Implementation Statements, ATO Review Package, CMMC Assessment
 **Last Updated:** January 2026
+
+---
+
+> **CUI and CMMC Applicability:** Organizations handling Controlled Unclassified Information (CUI) under DFARS 252.204-7012 must also comply with NIST SP 800-171 Rev 3. These requirements align with but do not replace the standards below. For NIST 800-171 control mapping and CMMC Level 2 alignment, see [NIST 800-171 Gap Analysis](nist-800-171-gap-analysis.md).
 
 ---
 
@@ -21,7 +25,7 @@
 | **DoDI 8520.03** | Primary authentication instruction for DoD information systems | [DoD Issuances](https://www.esd.whs.mil/Directives/) |
 | **FIPS 201-3** | PIV credential and authentication requirements | — |
 | **NIST SP 800-53 Rev 5** | Security controls baseline (IA family) | [Control Mapping](appendices.md#appendix-a-nist-sp-800-53-rev-5-control-mapping) |
-| **NIST SP 800-63-4** | Digital identity guidelines (IAL, AAL, FAL) | [NIST Publications](https://pages.nist.gov/800-63-4/) |
+| **NIST SP 800-63 Rev 4** | Digital identity guidelines (IAL, AAL, FAL) | [NIST Publications](https://pages.nist.gov/800-63-4/) |
 | **NIST SP 800-171 Rev 3** | CUI protection for nonfederal systems (DFARS, CMMC) | [Gap Analysis](nist-800-171-gap-analysis.md) |
 
 ---
@@ -125,6 +129,23 @@ The following are **prohibited at IL4 and above**:
 - Voice call OTP
 - Software-only tokens without hardware binding (IL5+)
 
+<a id="44-nist-800-171-cui-requirements"></a>
+
+### 4.4 NIST 800-171 CUI-Specific Requirements
+
+For systems processing CUI under DFARS 252.204-7012, the following DoD Organization-Defined Parameters (ODPs) apply:
+
+| Requirement | DoD ODP Value | NIST 800-171 Control | Implementation |
+|-------------|---------------|---------------------|----------------|
+| MFA for privileged access | Required | 03.05.03 | [MFA Configuration](implementation-guide.md#2-multi-factor-authentication-mfa) |
+| MFA for network access | Required | 03.05.03 | Sign-on policy enforcement |
+| Minimum password length | **16 characters** | 03.05.09 | [Password Policy](implementation-guide.md#45-password-policy-configuration) |
+| Inactive account disable | **90 days** | 03.01.01 | [Deprovisioning](implementation-guide.md#43-deprovisioning) |
+| Identifier reuse prevention | **10 years** | 03.05.05 | [Identifier Management](implementation-guide.md#44-identifier-management) |
+| Device lock timeout | **≤15 minutes** | 03.01.10 | [Session Configuration](implementation-guide.md#51-session-timeout-configuration) |
+
+**Note:** These values are mandatory for CMMC Level 2 certification. For complete mapping, see [DoD ODP Reference](nist-800-171-gap-analysis.md#appendix-h-nist-800-171-dod-odp-reference).
+
 ---
 
 <a id="5-federation-requirements"></a>
@@ -209,7 +230,9 @@ Note: TLS Token Binding (RFC 8471) is not widely implemented. Equivalent protect
 
 <a id="8-ato-assessor-expectations"></a>
 
-## 8. ATO Assessor Expectations
+## 8. ATO and CMMC Assessor Expectations
+
+### 8.1 ATO Assessment Verification
 
 Assessors will verify:
 
@@ -225,7 +248,18 @@ Assessors will verify:
 | 8 | Explicit prohibition | Password-only authentication disabled |
 | 9 | Disabled non-compliant factors | SMS, email, voice OTP disabled — [MFA Matrix](appendices.md#appendix-e-mfa-factor-compliance-matrix) |
 
-For complete ATO evidence checklist, see [Implementation Guide: ATO Evidence Checklist](implementation-guide.md#64-ato-evidence-checklist).
+### 8.2 CMMC Level 2 Additional Verification
+
+For organizations subject to CMMC, assessors will also verify:
+
+| # | Verification Item | DoD ODP | Evidence |
+|---|-------------------|---------|----------|
+| 10 | Password policy compliance | 16+ characters | [Password Policy](implementation-guide.md#45-password-policy-configuration) |
+| 11 | Inactive account management | 90-day disable | [Deprovisioning](implementation-guide.md#43-deprovisioning) |
+| 12 | Identifier reuse prevention | 10-year retention | [Identifier Management](implementation-guide.md#44-identifier-management) |
+| 13 | Account lifecycle documentation | Documented process | SCIM configuration, provisioning procedures |
+
+For complete ATO and CMMC evidence checklist, see [Implementation Guide: ATO Evidence Checklist](implementation-guide.md#64-ato-evidence-checklist).
 
 ---
 
